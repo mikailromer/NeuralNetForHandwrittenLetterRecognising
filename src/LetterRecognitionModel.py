@@ -41,16 +41,16 @@ def loadSamplesAndLabels():
 
 def NeuralNetInit():
     Model=Sequential()
-    Model.add(Conv2D(30, (6, 6),padding='same', input_shape=(1, 28, 28), activation='relu'))
+    Model.add(Conv2D(30, (10, 10),padding='same', input_shape=(1, 28, 28), activation='relu'))
     Model.add(MaxPooling2D(pool_size=(2,2), padding='same'))
     Model.add(Dropout(0.2))
-    Model.add(Conv2D(15, kernel_size=(3, 3),padding='same', activation='relu'))
+    Model.add(Conv2D(15, kernel_size=(5, 5),padding='same', activation='relu'))
     Model.add(MaxPooling2D(pool_size=(2, 2),padding='same'))
     Model.add(Dropout(0.2))
     Model.add(Flatten())
-    Model.add(Dense(256,activation='relu'))
+    Model.add(Dense(328,activation='relu'))
     Model.add(Dropout(0.15))
-    Model.add(Dense(56, activation='relu'))
+    Model.add(Dense(80, activation='relu'))
     Model.add(Dropout(0.08))
     Model.add(Dense(27,activation='softmax'))
     # Compile model
