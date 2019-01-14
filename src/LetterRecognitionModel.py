@@ -7,6 +7,7 @@ from matplotlib import pyplot as plot
 from scipy.io import loadmat
 from os import path,makedirs
 import numpy as np
+from random import randint
 
 
 
@@ -58,7 +59,6 @@ def NeuralNetInit():
     return Model
 
 def TrainAndSaveModel(x_train,x_test,y_train,y_test,Epochs,BatchSize,ModelFileName,WeightsFileName):
-    Model=NeuralNetInit()
     FileDir = path.join('', path.dirname(path.abspath(__file__)), 'models')
     if path.isdir(FileDir):
         ModelFilePath=path.join(FileDir,ModelFileName)
@@ -68,6 +68,7 @@ def TrainAndSaveModel(x_train,x_test,y_train,y_test,Epochs,BatchSize,ModelFileNa
         ModelFilePath=path.join(FileDir,ModelFileName)
         WeightsFilePath=path.join(FileDir,WeightsFileName)
 
+    Model = NeuralNetInit()
     checkpointer=ModelCheckpoint(WeightsFilePath,verbose=1,save_best_only=True)
     Model.fit(x_train,y_train,batch_size=BatchSize, epochs=Epochs, validation_split=0.2,callbacks=[checkpointer],verbose=1,shuffle=True)
     Model.load_weights(path.join('',FileDir,WeightsFilePath))
@@ -79,15 +80,46 @@ def ModelEvaluation(ModelFileName, x_test,y_test):
     result=Model.evaluate(x_test,y_test,verbose=0)
     accuracy=100*result[1]
     print('Test accuracy: %.4f%%' % accuracy)
+    listOfIndexes=[]
+    for i in range(3):
+        listOfIndexes.append(randint(0,len(x_test)))
 
-x_train,x_test,y_train,y_test=loadSamplesAndLabels()
-PathToTheModel=TrainAndSaveModel(x_train,x_test,y_train,y_test,1000,128,'eminst_mlp_model.h5','emnist.model.best.hdf5')
-ModelEvaluation(PathToTheModel,x_test,y_test)
+    for i in range(3):
+        img=x_test[listOfIndexes[i]]
+        answer=findAnswer(y_test[listOfIndexes[i]])
+        test_img = img.reshape((1, 1, 28, 28))
+        img_class = Model.predict_classes(test_img)
+        prediction = convertToLetter(img_class[0])
+        answer=convertToLetter(answer)
+        print("Prediction: {}\n".format(prediction))
+        print("Answer: {}\n".format(answer))
+        plot.imshow(img[0], cmap='gray')
+        print('o')
 
 
 
-#img = x_train[1]
-#answer = y_train[1]
-# visualize image
-#plot.imshow(img[0], cmap='gray')
+    # make a predictino
+def findAnswer(element):
+    answer=None
+    for i in range(len(element)):
+        if element[i]==1:
+            answer=i
+            break
+
+    if answer is None:
+        raise Exception("The solution doesn't exist.")
+
+    return answer
+
+def convertToLetter(number):
+    char= chr(number+96)
+    return char
+
+if __name__ == "__main__":
+    x_train,x_test,y_train,y_test=loadSamplesAndLabels()
+    #PathToTheModel=TrainAndSaveModel(x_train,x_test,y_train,y_test,1000,128,'eminst_mlp_model.h5','emnist.model.best.hdf5')
+    ModelEvaluation('/home/michal/Dokumenty/NeuralNetForHandwrittenLetterRecognising/src/models/eminst_mlp_model.h5',x_test,y_test)
+
+
+
 
