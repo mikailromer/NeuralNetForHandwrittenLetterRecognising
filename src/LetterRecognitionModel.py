@@ -80,11 +80,54 @@ def ModelEvaluation(ModelFileName, x_test,y_test):
     result=Model.evaluate(x_test,y_test,verbose=0)
     accuracy=100*result[1]
     print('Test accuracy: %.4f%%' % accuracy)
+    fileDir=path.join('',path.dirname(path.abspath(__file__)),'results')
+    if path.isdir(fileDir)==0:
+        makedirs(fileDir)
+    table=[]
+    for i in range(26):
+        temp=[]
+        for j in range(26):
+            temp.append(0)
+
+        table.append(temp)
+
+
+   # table=np.zeros((26,26),dtype='int')
+    for i in range(len(x_test)):
+        img = x_test[i]
+        test_img = img.reshape((1, 1, 28, 28))
+        img_class = Model.predict_classes(test_img)
+        prediction = img_class[0]-1
+        answer=findAnswer(y_test[i])-1
+        table[answer][prediction]=table[answer][prediction]+1
+
+
+    letterTable=[]
+    for i in range(26):
+        letterTable.append(chr(i+65))
+
+    table.insert(0,letterTable)
+    del letterTable
+    for i in range(27):
+        if i==0:
+            table[i].insert(0, ' ')
+        else:
+            table[i].insert(0,chr(i+64))
+    file=open(path.join(fileDir,'result'),mode='w')
+    for row in table:
+        for elem in row:
+            file.write('%6s' %elem)
+        file.write('\n')
+
+    file.close()
+
+
+    '''
     listOfIndexes=[]
-    for i in range(3):
+    for i in range(10):
         listOfIndexes.append(randint(0,len(x_test)))
 
-    for i in range(3):
+    for i in range(10):
         img=x_test[listOfIndexes[i]]
         answer=findAnswer(y_test[listOfIndexes[i]])
         test_img = img.reshape((1, 1, 28, 28))
@@ -94,7 +137,8 @@ def ModelEvaluation(ModelFileName, x_test,y_test):
         print("Prediction: {}\n".format(prediction))
         print("Answer: {}\n".format(answer))
         plot.imshow(img[0], cmap='gray')
-        print('o')
+        plot.show()
+    '''
 
 
 
