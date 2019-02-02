@@ -162,7 +162,7 @@ def convertToLetter(number):
 if __name__ == "__main__":
     x_train,x_test,y_train,y_test=loadSamplesAndLabels()
     #PathToTheModel=TrainAndSaveModel(x_train,x_test,y_train,y_test,1000,128,'eminst_mlp_model.h5','emnist.model.best.hdf5')
-    ModelEvaluation('/home/michal/Dokumenty/NeuralNetForHandwrittenLetterRecognising/src/models/eminst_mlp_model.h5',x_test,y_test)
+    ModelEvaluation(path.join('',path.dirname(path.abspath(__file__)),'models','eminst_mlp_model.h5'),x_test,y_test)
 
 
 
